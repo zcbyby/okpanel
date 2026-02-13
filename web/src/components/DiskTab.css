@@ -1,0 +1,76 @@
+.disk-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.disk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 16px;
+}
+
+.disk-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.disk-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.disk-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e1dfdd;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-row .label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.detail-row .value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  font-size: 16px;
+  color: #666;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  color: #999;
+}
+
+@media (max-width: 1024px) {
+  .disk-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .disk-details {
+    grid-template-columns: 1fr;
+  }
+}
