@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiCallJSON } from '../utils/api'
 import './ProcessesTab.css'
 
 export default function ProcessesTab() {
@@ -11,8 +12,7 @@ export default function ProcessesTab() {
   useEffect(() => {
     const fetchProcesses = async () => {
       try {
-        const response = await fetch('/api/processes')
-        const data = await response.json()
+        const data = await apiCallJSON('/api/processes')
         setProcesses(data.processes || [])
       } catch (error) {
         console.error('Failed to fetch processes:', error)

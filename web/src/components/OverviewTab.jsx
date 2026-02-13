@@ -12,6 +12,7 @@ import {
   Area,
 } from 'recharts'
 import SystemInfoPanel from './SystemInfoPanel'
+import { apiCallJSON } from '../utils/api'
 import './OverviewTab.css'
 
 export default function OverviewTab() {
@@ -22,15 +23,21 @@ export default function OverviewTab() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [infoRes, statusRes] = await Promise.all([
-          fetch('/api/system-info'),
-          fetch('/api/system-status'),
+        const [infoData, statusData, diskIOData, netConnData] = await Promise.all([
+          apiCallJSON('/api/system-info'),
+          apiCallJSON('/api/system-status'),
+          apiCallJSON('/api/disk-io').catch(() => ({ read: 0, write: 0 })),
+          apiCallJSON('/api/network-connections').catch(() => ({ total: 0 })),
         ])
-        const infoData = await infoRes.json()
-        const statusData = await statusRes.json()
         
         setSystemInfo(infoData)
         setStatus(statusData)
+
+        // 存储额外数据到 window 对象供其他地方使用
+        window.__extraData = {
+          diskIO: diskIOData,
+          netConn: netConnData,
+        }
 
         setChartData(prev => {
           const newData = [
@@ -156,6 +163,126 @@ export default function OverviewTab() {
               <div className="stat-item">
                 <div className="stat-label">休眠</div>
                 <div className="stat-value" style={{ color: '#0078d4' }}>{status.processes.sleeping}</div>
+              </div>
+              {status.processes.zombie > 0 && (
+                <div className="stat-item">
+                  <div className="stat-label">僵尸</div>
+                  <div className="stat-value" style={{ color: '#d13438' }}>{status.processes.zombie}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 系统负载卡片 */}
+        <div className="win-card">
+          <div className="win-card-header">
+            <span className="card-icon">📊</span>
+            <h3>系统负载</h3>
+          </div>
+          <div className="win-card-content">
+            <div className="load-stats">
+              <div className="load-item">
+                <span className="load-label">1分钟</span>
+                <span className="load-value">{status.system.loadAverage.one.toFixed(2)}</span>
+              </div>
+              <div className="load-item">
+                <span className="load-label">5分钟</span>
+                <span className="load-value">{status.system.loadAverage.five.toFixed(2)}</span>
+              </div>
+              <div className="load-item">
+                <span className="load-label">15分钟</span>
+                <span className="load-value">{status.system.loadAverage.fifteen.toFixed(2)}</span>
+              </div>
+            </div>
+            <div className="uptime-info">
+              <span className="uptime-label">运行时间</span>
+              <span className="uptime-value">{status.system.uptimeFormatted}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 内存详情卡片 */}
+        <div className="win-card">
+          <div className="win-card-header">
+            <span className="card-icon">🧠</span>
+            <h3>内存详情</h3>
+          </div>
+          <div className="win-card-content">
+            <div className="memory-detail">
+              <div className="mem-row">
+                <span className="mem-label">缓存</span>
+                <span className="mem-value">{(status.memory.cached / 1024 / 1024 / 1024).toFixed(2)} GB</span>
+              </div>
+              <div className="mem-row">
+                <span className="mem-label">缓冲区</span>
+                <span className="mem-value">{(status.memory.buffers / 1024 / 1024 / 1024).toFixed(2)} GB</span>
+              </div>
+              {status.memory.swap.total > 0 && (
+                <>
+                  <div className="mem-row">
+                    <span className="mem-label">交换空间</span>
+                    <span className="mem-value">
+                      {(status.memory.swap.used / 1024 / 1024 / 1024).toFixed(2)} / {(status.memory.swap.total / 1024 / 1024 / 1024).toFixed(2)} GB
+                    </span>
+                  </div>
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{
+                        width: `${status.memory.swap.total > 0 ? (status.memory.swap.used / status.memory.swap.total) * 100 : 0}%`,
+                        backgroundColor: status.memory.swap.used > 0 ? '#ffc107' : '#e0e0e0'
+                      }}
+                    ></div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 额外指标行 */}
+      <div className="status-cards">
+        {/* 磁盘 I/O */}
+        <div className="win-card">
+          <div className="win-card-header">
+            <span className="card-icon">💾</span>
+            <h3>磁盘 I/O</h3>
+          </div>
+          <div className="win-card-content">
+            <div className="io-stats">
+              <div className="io-item">
+                <div className="io-label">读取</div>
+                <div className="io-value">{(window.__extraData?.diskIO?.readRate || 0).toFixed(2)} ops/s</div>
+              </div>
+              <div className="io-item">
+                <div className="io-label">写入</div>
+                <div className="io-value">{(window.__extraData?.diskIO?.writeRate || 0).toFixed(2)} ops/s</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 网络连接 */}
+        <div className="win-card">
+          <div className="win-card-header">
+            <span className="card-icon">🔗</span>
+            <h3>网络连接</h3>
+          </div>
+          <div className="win-card-content">
+            <div className="conn-stats">
+              <div className="conn-item">
+                <div className="conn-label">总计</div>
+                <div className="conn-value">{window.__extraData?.netConn?.total || 0}</div>
+              </div>
+              <div className="conn-item">
+                <div className="conn-label">已建立</div>
+                <div className="conn-value">{window.__extraData?.netConn?.established || 0}</div>
+              </div>
+              <div className="conn-item">
+                <div className="conn-label">侦听</div>
+                <div className="conn-value">{window.__extraData?.netConn?.listen || 0}</div>
               </div>
             </div>
           </div>

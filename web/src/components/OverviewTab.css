@@ -175,6 +175,152 @@
   color: #333;
 }
 
+/* 系统负载 */
+.load-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.load-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.load-label {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.load-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #0078d4;
+  font-family: 'Courier New', monospace;
+}
+
+.uptime-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid #e0e0e0;
+}
+
+.uptime-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.uptime-value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+/* 内存详情 */
+.memory-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mem-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.mem-row:last-of-type {
+  border-bottom: none;
+}
+
+.mem-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.mem-value {
+  font-size: 12px;
+  color: #333;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+/* 磁盘 I/O */
+.io-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.io-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.io-label {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.io-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  font-family: 'Courier New', monospace;
+}
+
+/* 网络连接 */
+.conn-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.conn-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.conn-label {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.conn-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  font-family: 'Courier New', monospace;
+}
+
 /* 图表卡片 */
 .chart-card {
   grid-column: 1 / -1;
@@ -196,6 +342,18 @@
   }
 
   .process-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .load-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .io-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .conn-stats {
     grid-template-columns: 1fr;
   }
 

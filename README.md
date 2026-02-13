@@ -10,11 +10,23 @@
 - 轻量级，无重型 UI 组件库依赖
 - 响应式设计，适配各种屏幕尺寸
 
-### 📊 总览标签页
+### 🎯 仪表板信息栏（Header）
+- **实时 CPU 使用率** - 全局显示当前 CPU 占用百分比
+- **实时内存使用率** - 全局显示当前内存占用百分比  
+- **网络速率** - 实时显示上行/下行网络流量
+- **系统负载** - 显示 1 分钟负载平均值
+- **系统运行时间** - 显示服务器启动至今的运行时长
+- **主机名** - 显示服务器主机名
+
+### 📊 总览标签页（Overview）
 - **系统信息** - 显示 OS、内核版本、处理器、核心数、内存等基本信息
 - **CPU 监控** - 实时 CPU 使用率、分核心使用率展示
 - **内存监控** - 内存使用情况图表化展示
-- **进程统计** - 运行中、休眠进程数统计
+- **内存详情** - 显示缓存、缓冲区、交换空间等详细信息
+- **进程统计** - 运行中、休眠、僵尸进程数统计
+- **系统负载** - 1/5/15 分钟负载平均值及系统运行时间
+- **磁盘 I/O** - 显示磁盘读写操作速率
+- **网络连接** - 显示总连接数、已建立、侦听等连接统计
 - **趋势图表** - CPU 和内存使用趋势（面积图）
 
 ### ⚙️ 进程标签页
@@ -32,6 +44,7 @@
 - **网络流量图表** - 实时显示网络发送和接收流量
 - **接口统计** - 各网络接口的流量统计
 - **接口详情** - 显示 IP 地址、MAC 地址、网掩码等网络信息
+
 
 ## 项目结构
 
@@ -60,52 +73,6 @@ okpanel/
 └── README.md
 ```
 
-## 安装和运行
-
-### 前提条件
-- Node.js >= 14.0
-- npm 或 yarn
-
-### 步骤
-
-1. **进入项目目录并安装依赖**
-```bash
-cd okpanel
-npm install
-```
-
-2. **开发模式**
-
-同时运行后端服务器和前端开发服务器：
-
-```bash
-npm run dev
-```
-
-这会自动启动：
-- 后端服务器运行在 `http://localhost:3000`
-- 前端开发服务器运行在 `http://localhost:5173`
-
-3. **生产模式**
-
-构建并运行：
-
-```bash
-npm run build
-npm start
-```
-
-访问 `http://localhost:3000` 查看应用
-
-## 可用的 npm Scripts
-
-- `npm run dev` - 同时启动后端和前端开发服务器
-- `npm run dev:server` - 仅启动后端开发服务器
-- `npm run dev:web` - 仅启动前端开发服务器
-- `npm run build` - 构建前端（生产模式）
-- `npm run preview` - 预览生产构建
-- `npm start` - 启动生产服务器
-
 ## API 端点
 
 后端提供以下 RESTful API 端点：
@@ -113,12 +80,16 @@ npm start
 | 端点 | 方法 | 描述 |
 |------|------|------|
 | `/api/health` | GET | 健康检查 |
-| `/api/system-info` | GET | 系统基本信息 |
-| `/api/cpu-load` | GET | CPU 使用率详情 |
-| `/api/system-status` | GET | 综合系统状态 |
-| `/api/disk` | GET | 磁盘信息 |
-| `/api/network` | GET | 网络信息 |
-| `/api/processes` | GET | 进程列表 |
+| `/api/system-info` | GET | 系统基本信息（CPU、内存、OS） |
+| `/api/cpu-load` | GET | CPU 使用率详情（总体和分核心） |
+| `/api/system-status` | GET | 综合系统状态（CPU、内存、进程、负载、运行时间） |
+| `/api/disk` | GET | 磁盘分区信息和使用情况 |
+| `/api/disk-io` | GET | 磁盘读写操作速率 |
+| `/api/network` | GET | 网络接口信息和流量统计 |
+| `/api/network-speed` | GET | 实时网络上传/下载速度 |
+| `/api/network-connections` | GET | 网络连接统计（总计、已建立、侦听等） |
+| `/api/processes` | GET | 进程列表（按内存使用排序，前 100 个） |
+| `/api/dashboard` | GET | 完整的仪表板数据（合并所有数据源） |
 
 ## 技术栈
 
@@ -143,23 +114,33 @@ npm start
 - Safari >= 14
 - Edge >= 90
 
-## 特性亮点
+## 监控指标说明
 
-### 🏗️ 架构设计
-- **全栈一体化** - 后端 + 前端统一 package.json 配置
-- **开发友好** - Vite 热模块替换 (HMR)，无刷新开发体验
-- **无数据库** - 完全基于 Linux 系统调用，无需额外依赖
-- **轻量级** - 移除 Fluent UI 重型组件库，采用原生 HTML + CSS
-- **实时更新** - WebAPI 轮询机制，自动刷新系统指标
+### 系统负载（Load Average）
+- **1分钟负载** - 过去1分钟内的平均负载
+- **5分钟负载** - 过去5分钟内的平均负载  
+- **15分钟负载** - 过去15分钟内的平均负载
+- **参考标准** - 负载值 = CPU 核数 表示系统完全利用，> CPU 核数 表示有等待任务
 
-### 🎯 用户体验
-- Windows 11 风格的熟悉界面
-- 直观的进度条和指标显示
-- 可交互的数据表和排序功能
-- 平滑的动画和过渡效果
-- 自适应的响应式设计
+### 内存详情
+- **缓存 (Cached)** - Linux 用于文件缓存的内存，可随时释放
+- **缓冲区 (Buffers)** - 用于 I/O 缓冲的内存，可随时释放
+- **交换空间 (Swap)** - 当物理内存不足时，系统使用的虚拟内存
 
-## 性能说明
+### 磁盘 I/O
+- **读取速率** - 每秒磁盘读操作次数 (ops/s)
+- **写入速率** - 每秒磁盘写操作次数 (ops/s)
+- **说明** - 高 I/O 可能预示磁盘性能瓶颈
+
+### 网络连接
+- **总计** - 当前所有网络连接总数
+- **已建立** - 正在通信的连接数
+- **侦听** - 等待传入连接的服务
+
+### 进程状态
+- **运行中** - R 状态，正在执行的进程
+- **休眠** - S 状态，等待事件的进程
+- **僵尸** - Z 状态，已退出但未被回收的进程
 
 - **构建大小** - 生产构建 ~555 KB (gzip 压缩后 ~157 KB)
 - **构建时间** - 约 3-4 秒
@@ -169,34 +150,6 @@ npm start
 - **磁盘监控** - 每 5 秒刷新
 - **网络监控** - 每 3 秒刷新，流量趋势保持最近 20 条记录
 
-## 故障排除
-
-### npm install 失败
-由于本项目已移除 @fluentui/react-components 重型依赖，安装应该很流畅。如遇问题：
-
-```bash
-# 清理并重新安装
-rm -rf node_modules package-lock.json
-npm install
-```
-
-### 端口被占用
-如果默认端口 3000 被占用，可以设置环境变量：
-```bash
-PORT=8080 npm start
-```
-
-### API 连接失败
-确保后端正常运行。在开发模式下使用 `npm run dev`，Vite 会自动代理 `/api` 路由到后端。
-
-检查 vite.config.js 中的代理配置：
-```javascript
-server: {
-  proxy: {
-    '/api': 'http://localhost:3000'
-  }
-}
-```
 
 ### 权限问题
 某些系统信息需要足够的权限才能访问，如需获取完整信息，可能需要以 root 权限运行：
@@ -222,96 +175,43 @@ npm start
 3. 访问应用：
 打开浏览器访问 `http://localhost:3000`
 
-### Docker 部署
+## 修改密码
 
-创建 `Dockerfile`：
+默认账户：`admin / admin`
 
-```dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-
-# 复制依赖配置
-COPY package.json package-lock.json ./
-
-# 安装依赖
-RUN npm ci
-
-# 复制源代码
-COPY server/ ./server/
-COPY web/ ./web/
-COPY vite.config.js .
-
-# 建立生产构建
-RUN npm run build
-
-# 暴露端口
-EXPOSE 3000
-
-# 启动应用
-CMD ["npm", "start"]
-```
-
-#### 构建 Docker 镜像
+1. 生成新密码哈希：
 ```bash
-docker build -t okpanel:latest .
+node -e "const bcrypt = require('bcrypt'); console.log(bcrypt.hashSync('你的新密码', 10))"
 ```
 
-#### 运行容器
-```bash
-docker run -d -p 3000:3000 --name okpanel okpanel:latest
+2. 将生成的哈希替换 `server/index.js` 中的 password 值：
+```javascript
+password: '新哈希值'
 ```
-
-#### 查看日志
-```bash
-docker logs okpanel
-```
-
-### 云部署（示例：Heroku/Railway）
-
-1. 提交代码到 Git 仓库
-2. 连接仓库到部署平台
-3. 设置环境变量（如需要）
-4. 部署会自动执行 `npm install` 和 `npm start`
 
 ## 许可证
 
 MIT
 
-## 更新日志
+## 修改密码
 
-### v1.1.0 (2026-02-13)
-- 🎨 完全迁移到 Windows UI 设计（移除 Fluent UI）
-- ⚡ 优化构建大小：598 KB → 555 KB
-- 🚀 加快构建速度：6.5s → 3.1s
-- 🧹 移除所有重型 UI 组件库依赖
-- 📱 改进响应式设计
+默认账户：`admin / admin`
 
-### v1.0.0 (2026-02-01)
-- ✅ 初始版本发布
-- 📊 完整的系统监控功能
-- 🎯 5 个主要标签页
-- 📈 实时图表和统计
+### 方法一：修改代码
 
-## 常见问题 (FAQ)
+1. 生成新密码哈希：
+```bash
+node -e "const bcrypt = require('bcrypt'); console.log(bcrypt.hashSync('你的新密码', 10))"
+```
 
-**Q: 为什么从 Fluent UI 迁移到 windows-ui-fabric？**
-A: 为了降低依赖复杂性和构建大小，采用轻量级 CSS 框架而非重型组件库。
+2. 将生成的哈希替换 `server/index.js` 中的 password 值：
+```javascript
+password: '新哈希值'
+```
 
-**Q: 支持实时通知吗？**
-A: 当前采用定时轮询机制（2-5秒），暂不支持 WebSocket。
+### 方法二：环境变量（推荐）
 
-**Q: 可以在其他 Linux 发行版上运行吗？**
-A: 是的，兼容所有 Linux 发行版。systeminformation 库自动适配。
-
-**Q: 能在 Windows 上运行后端吗？**
-A: 可以在 WSL2 或 Git Bash 上运行，但某些系统信息可能不准确。
-
-## 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
-请确保：
-- 代码遵循项目风格
-- 添加必要的测试
-- 更新相关文档
+设置环境变量 `ADMIN_PASSWORD`，服务启动时会自动使用该密码：
+```bash
+ADMIN_PASSWORD=your_password npm start
+```

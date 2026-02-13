@@ -9,6 +9,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
+import { apiCallJSON } from '../utils/api'
 import './NetworkTab.css'
 
 export default function NetworkTab() {
@@ -19,8 +20,7 @@ export default function NetworkTab() {
   useEffect(() => {
     const fetchNetworkInfo = async () => {
       try {
-        const response = await fetch('/api/network')
-        const data = await response.json()
+        const data = await apiCallJSON('/api/network')
         setNetworkInfo(data)
 
         // 添加历史数据用于图表

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiCallJSON } from '../utils/api'
 import './DiskTab.css'
 
 export default function DiskTab() {
@@ -7,8 +8,7 @@ export default function DiskTab() {
   useEffect(() => {
     const fetchDiskInfo = async () => {
       try {
-        const response = await fetch('/api/disk')
-        const data = await response.json()
+        const data = await apiCallJSON('/api/disk')
         setDiskInfo(data)
       } catch (error) {
         console.error('Failed to fetch disk info:', error)
